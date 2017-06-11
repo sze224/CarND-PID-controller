@@ -2,6 +2,44 @@
 Self-Driving Car Engineer Nanodegree Program
 
 ---
+## Reflections:
+
+PID controller:
+PID controller is one of the most commonly used controller in the industry. 
+The way that a PID controller works is that it will calculate the desired input to a system based on the error of the system.
+In this case, the error mwan the difference between the desired state and the current state.
+
+The effect of the PID components:
+* P - P stands for Porportional. Just as it sound, the contribution of the Porportional term depends on the size of the error. If the error is big, the controller will create a big input to offset the error. If the error is small, the porpotional term will have a small contribution.
+* I - I stands for Integral. The contribution of this term depending on the accumlation of the errors over time. The significant of this term is to get zero steady state error. In other word, this term will help the system get to the desired state once the system reaches steady state, which the porportional term alone will not be able to achieve. 
+* D - D stands for Derivative. The contribution of this term depending on the rate of change in error. This term can be think of as a predictive term. If the rate of change in error is larger, we can deduct that the system might be oscillating. With the derivative term, we can damp out the osciallation and reduce the overshoot of the system.
+
+Derivation of hyperparameters:
+
+This hyperparameters in this project (Kp, Ki, Kd) were chosen by the combination of manual tuning and the twiddle method. The first thing that I do was manually finding out a set of value where it will allow the car to roughly stay in the track. This manual tuning does not have to be pretty as the twiddle method will take care of that.
+Once I get gains that allow the car to stay in the track (doesn't matter if the car oscillate and overshot the desired state), I being to apply the twiddle method.  
+
+How does twiddle work:
+
+In order to use twiddle, there is a few things that we need to define:
+1) we will need to come up with a way to score how the current set of gains is performing. In this case, I am accumlating the cte of 1500 time step and treating that as the benchmark of the performance. 
+2) The stop condition for twiddle
+3) The predefined delta value of individual gain
+
+With these things defined, twiddle is just a really simple but effective method to optimize gains.
+
+Twiddle will increase the gain by the predefined delta value and then calculate the resulting performance benchmark. 
+
+If the performance benchmark is better than the best benckmark recorded, then twiddle will increase the predefined delta value and go to the next gain.
+
+If the performance benchmark is worst than the best benchmark recorded, then twiddle will try go the opposite direction and decrease the gain by the predefined delta value and calculate the resulting performance benchmark.
+
+Again, if the performance is better than the best benchmark recorded, twiddle will increase the predefined delta value and go to the next gain. However, if the performance is worst than the best benchmark recorded, twiddle will retore the gain in the beginning of the loop, decrease the predefined delta value and move on to the next gain.
+
+This above steps will be repeated until we hit the stop condition.
+
+Using the methods above, I was able to obtain the gains of:
+Final result: Kp - 0.188 Ki - 1.1e-05 Kd - 1.57078
 
 ## Dependencies
 
